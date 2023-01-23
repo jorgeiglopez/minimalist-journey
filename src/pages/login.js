@@ -19,7 +19,11 @@ const Login = () => {
     }, [])
 
 
-    return(<div><p>This is the Login component</p></div>);
+    return(
+        <div className="container flex mx-auto max-w-screen-md items-center h-screen">
+            <p>This is the Login component</p>
+        </div>
+    );
 }
 
 export default Login;
