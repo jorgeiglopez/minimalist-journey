@@ -1,24 +1,32 @@
 import {lazy, Suspense} from "react";
-import { BrowserRouter as Router, Route, Switch } from 'react-router-dom'
-import * as ROUTES from './constants/routes';
+import {BrowserRouter as Router, Route, Switch} from 'react-router-dom'
+import * as ROUTES from './constants/Routes';
+import UserContext from "./context/UserCtx";
+import useAuth from "./hooks/UseAuth";
 
-const Login = lazy(() => import('./pages/login'));
-const SignUp = lazy(() => import('./pages/signup'));
-const NotFound = lazy(() => import('./pages/not-found'));
+const Login = lazy(() => import('./pages/Login'));
+const SignUp = lazy(() => import('./pages/SignUp'));
+const NotFound = lazy(() => import('./pages/NotFound'));
+const Dashboard = lazy(() => import('./pages/Dashboard'));
 
 function App() {
-    console.log("Rendering App!");
-  return (
-    <Router>
-        <Suspense fallback={<p>Loading...</p>}>
-            <Switch>
-                <Route path={ROUTES.LOGIN} component={Login} />
-                <Route path={ROUTES.SIGN_UP} component={SignUp} />
-                <Route path={ROUTES.NOT_FOUND} component={NotFound} />
-            </Switch>
-        </Suspense>
-    </Router>
-  );
+    const {user} = useAuth();
+
+    return (
+        <UserContext.Provider value={{user}}>
+            <Router>
+                <Suspense fallback={<p>Loading...</p>}>
+                    <Switch>
+                        <Route path={ROUTES.LOGIN} component={Login}/>
+                        <Route path={ROUTES.SIGN_UP} component={SignUp}/>
+                        <Route path={ROUTES.NOT_FOUND} component={NotFound}/>
+                        <Route path={ROUTES.DASHBOARD} component={Dashboard} exact/>
+                        <Route component={NotFound}/>
+                    </Switch>
+                </Suspense>
+            </Router>
+        </UserContext.Provider>
+    );
 }
 
 export default App;

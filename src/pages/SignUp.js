@@ -1,10 +1,10 @@
 import React, {useContext, useEffect, useState} from "react";
 import {Link, useHistory} from "react-router-dom";
-import FirebaseContext from "../context/context";
-import * as ROUTES from '../constants/routes';
-import {doesUsernameExist} from "../services/firebaseServcie";
-import {isEmpty, validateEmail} from "../helpers/helperFunctions";
-import {COLLEC_USERS} from "../constants/firebaseCollections";
+import FirebaseContext from "../context/FirebaseCxt";
+import * as ROUTES from '../constants/Routes';
+import {doesUsernameExist} from "../services/FirebaseServcie";
+import {isEmpty, validateEmail} from "../helpers/HelperFunctions";
+import {COLLEC_USERS} from "../constants/FirebaseCollections";
 
 
 const Login = () => {

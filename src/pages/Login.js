@@ -1,8 +1,8 @@
 import React, {useContext, useEffect, useState} from "react";
 import {Link, useHistory} from "react-router-dom";
-import FirebaseContext from "../context/context";
-import * as ROUTES from '../constants/routes';
-import {isEmpty, validateEmail} from "../helpers/helperFunctions";
+import FirebaseContext from "../context/FirebaseCxt";
+import * as ROUTES from '../constants/Routes';
+import {isEmpty, validateEmail} from "../helpers/HelperFunctions";
 
 // TODO:
 //  - Email proper validation - touched, loose focus
