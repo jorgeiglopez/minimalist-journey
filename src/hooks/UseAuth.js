@@ -7,11 +7,6 @@ const useAuth = () => {
     const {firebase} = useContext(FirebaseContext);
 
     useEffect(() => {
-        // console.log("The onAuthStateChanged has changed!"); //TODELETE
-        // if (user) {
-        //     console.log("The user has been read from local storage", user); //TODELETE
-        //     return {user};
-        // }
         const userListener = firebase.auth().onAuthStateChanged((authUser) => {
             if (authUser) {
                 localStorage.setItem(LOCAL_STORAGE_AUTH_USER, JSON.stringify(authUser));
