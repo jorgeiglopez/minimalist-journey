@@ -48,6 +48,7 @@ const Header = () => {
                                     title="Sign Out"
                                     onClick={() => {
                                         firebase.auth().signOut();
+
                                         history.push(ROUTES.LOGIN);
                                     }}
                                     onKeyDown={(event) => {

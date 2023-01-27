@@ -3,7 +3,6 @@ import Skeleton from 'react-loading-skeleton';
 import { DEFAULT_IMAGE_PATH } from '../../constants/DevConstants';
 
 export default function User({ username, fullName }) {
-    console.log(username);
     return !username || !fullName ? (
         <Skeleton count={1} height={61} />
     ) : (

@@ -15,7 +15,7 @@ export default function SuggestedProfile({ profileDocId, username, profileId, us
         setFollowed(true);
         await updateLoggedInUserFollowing(loggedInUserDocId, profileId, false);
         await updateFollowedUserFollowers(profileDocId, userId, false);
-        const [user] = await getUserByUserId(userId);
+        const user = await getUserByUserId(userId);
         setActiveUser(user);
     }
 

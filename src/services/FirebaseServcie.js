@@ -44,8 +44,6 @@ export async function updateLoggedInUserFollowing(
     profileId, // the user that karl requests to follow
     isFollowingProfile // true/false (am i currently following this person?)
 ) {
-    console.log('loggedInUserDocId', loggedInUserDocId);
-    console.log('profileId', profileId);
     return firebase
         .firestore()
         .collection('users')
@@ -71,5 +69,12 @@ export async function updateFollowedUserFollowers(
                 FieldValue.arrayRemove(loggedInUserDocId) :
                 FieldValue.arrayUnion(loggedInUserDocId)
         });
+}
+
+export async function getUsersPhotos(user) {
+    return firebase.firestore()
+        .collection('photos')
+        .where('userId', '==', user.userId)
+        .get();
 }
 
