@@ -22,6 +22,9 @@ module.exports = {
             },
             red: {
                 primary: '#ed4956'
+            },
+            brown: {
+                medium: '#473c38'
             }
         }
     }
