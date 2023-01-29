@@ -14,10 +14,11 @@ const Login = () => {
     const [emailAddress, setEmailAddress] = useState('');
     const [password, setPassword] = useState('');
     const [username, setUsername] = useState('');
-    const [fullName, setFullName] = useState('');
+    const [firstName, setFirstName] = useState('');
+    const [lastName, setLastName] = useState('');
     const [error, setError] = useState('');
 
-    const isInvalid = !validateEmail(emailAddress) || isEmpty(password) || isEmpty(username) || isEmpty(fullName);
+    const isInvalid = !validateEmail(emailAddress) || isEmpty(password) || isEmpty(username) || isEmpty(firstName) || isEmpty(lastName);
 
     const handleSignup = async (event) => {
         event.preventDefault();
@@ -30,9 +31,10 @@ const Login = () => {
                     await createUserResult.user.updateProfile({displayName: username.toLowerCase()});
 
                     await firebase.firestore().collection(COLLEC_USERS).add({
-                        userId: createUserResult.user.uid,
+                        uid: createUserResult.user.uid, // The UID is coming from the Auth service. It's the link between the 2 entities.
                         username: username.toLowerCase(),
-                        fullName,
+                        firstName,
+                        lastName,
                         emailAddress: emailAddress.toLowerCase(),
                         following: [],
                         dateCreated: Date.now()
@@ -81,13 +83,22 @@ const Login = () => {
                             value={username}
                         />
                         <input
-                            aria-label="Enter your full name"
+                            aria-label="Enter your first name"
                             type="text"
-                            placeholder="Full name"
+                            placeholder="First name"
                             autoComplete="off"
                             className="text-sm text-gray-base w-full mr-3 py-5 px-4 h-2 border border-gray-primary rounded mb-2"
-                            onChange={e => setFullName(e.target.value)}
-                            value={fullName}
+                            onChange={e => setFirstName(e.target.value)}
+                            value={firstName}
+                        />
+                        <input
+                            aria-label="Enter your last name"
+                            type="text"
+                            placeholder="Last name"
+                            autoComplete="off"
+                            className="text-sm text-gray-base w-full mr-3 py-5 px-4 h-2 border border-gray-primary rounded mb-2"
+                            onChange={e => setLastName(e.target.value)}
+                            value={lastName}
                         />
                         <input
                             aria-label="Enter your email address"

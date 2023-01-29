@@ -8,7 +8,7 @@ export default function AddComment({ docId, comments, setComments, commentInput 
     const user = useContext(UserContext);
 
     const handleSubmitComment = (event) => {
-        const displayName = user.fullName;
+        const displayName = `${user.firstName} ${user.lastName}`;
         event.preventDefault();
 
         setComments([...comments, { displayName, comment }]);

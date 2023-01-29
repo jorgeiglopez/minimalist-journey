@@ -1,20 +1,17 @@
-import { useState, useContext } from 'react';
-import { Link } from 'react-router-dom';
-import {
-    updateLoggedInUserFollowing,
-    updateFollowedUserFollowers,
-    getUserByUserId
-} from '../../services/FirebaseServcie';
-import UserContext from '../../context/UserContext';
+import {useState} from 'react';
+import {Link} from 'react-router-dom';
+import {updateFollowedUserFollowers, updateLoggedInUserFollowing,} from '../../services/FirebaseServcie';
 
-export default function SuggestedProfile({ profileDocId, username, profileId, userId, loggedInUserDocId }) {
+export default function SuggestedProfile({username, uid, docId, avatarUrl}) {
     const [followed, setFollowed] = useState(false);
-    const user  = useContext(UserContext);
+
+    console.log(avatarUrl);
 
     async function handleFollowUser() {
+        console.log('-------Calling handleFollowUser----');
         setFollowed(true);
-        await updateLoggedInUserFollowing(loggedInUserDocId, profileId, false);
-        await updateFollowedUserFollowers(profileDocId, userId, false);
+        await updateLoggedInUserFollowing(docId, uid, false);
+        await updateFollowedUserFollowers(docId, uid, false);
     }
 
     return !followed ? (
@@ -22,8 +19,8 @@ export default function SuggestedProfile({ profileDocId, username, profileId, us
             <div className="flex items-center justify-between">
                 <img
                     className="rounded-full w-8 flex mr-3"
-                    src={`/images/avatars/${username}.jpg`}
-                    alt=""
+                    src={avatarUrl || '/images/avatars/default.png'}
+                    alt={'Avatar for' + username}
                     onError={(e) => {
                         e.target.src = `/images/avatars/default.png`;
                     }}

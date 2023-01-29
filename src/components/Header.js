@@ -60,7 +60,7 @@ const Header = () => {
     const UserAvatar = <Link to={`/p/${user?.username}`}>
         <img
             className="rounded-full h-8 w-8 mr-4"
-            src={`/images/avatars/dali.jpg`}
+            src={user?.avatarUrl || '/images/avatars/default.png'}
             alt={`${user?.username} profile`}
             onError={(e) => {
                 e.target.src = DEFAULT_IMAGE_PATH;

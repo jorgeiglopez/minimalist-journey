@@ -1,5 +1,5 @@
 import { useContext } from 'react';
-import User from './User';
+import LoggedUser from './LoggedUser';
 import Suggestions from './Suggestions';
 import UserContext from '../../context/UserContext';
 
@@ -8,8 +8,8 @@ export default function Sidebar() {
     console.log("***** Sidebar  user:", user);
     return (
         <div className="p-4">
-            <User username={user?.username} fullName={user?.fullName} />
-            <Suggestions userId={user?.userId} following={user?.following} loggedInUserDocId={user?.docId} />
+            <LoggedUser user={user} />
+            <Suggestions user={user} />
         </div>
     );
 }

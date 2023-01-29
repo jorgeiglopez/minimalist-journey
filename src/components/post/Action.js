@@ -16,7 +16,7 @@ export default function Action({ docId, totalLikes, likedPhoto, handleFocus }) {
             .collection('photos')
             .doc(docId)
             .update({
-                likes: toggleLiked ? FieldValue.arrayRemove(user.userId) : FieldValue.arrayUnion(user.userId)
+                likes: toggleLiked ? FieldValue.arrayRemove(user.uid) : FieldValue.arrayUnion(user.uid)
             });
 
         setLikes((likes) => (toggleLiked ? likes - 1 : likes + 1));
