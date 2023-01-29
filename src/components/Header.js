@@ -2,7 +2,7 @@ import FirebaseContext from "../context/FirebaseContext";
 import {useContext} from "react";
 import {Link, useHistory} from "react-router-dom";
 import * as ROUTES from "../constants/Routes";
-import {DEFAULT_IMAGE_PATH} from "../constants/DevConstants";
+import {DEFAULT_AVATAR_IMAGE_PATH} from "../constants/DevConstants";
 import UserContext from "../context/UserContext";
 
 const Header = () => {
@@ -60,10 +60,10 @@ const Header = () => {
     const UserAvatar = <Link to={`/p/${user?.username}`}>
         <img
             className="rounded-full h-8 w-8 mr-4"
-            src={user?.avatarUrl || '/images/avatars/default.png'}
+            src={user?.avatarUrl || DEFAULT_AVATAR_IMAGE_PATH}
             alt={`${user?.username} profile`}
             onError={(e) => {
-                e.target.src = DEFAULT_IMAGE_PATH;
+                e.target.src = DEFAULT_AVATAR_IMAGE_PATH;
             }}
         />
     </Link>;

@@ -6,9 +6,7 @@ import Post from "./post";
 
 const Timeline = () => {
     const user = useContext(UserContext);
-    console.log("***** Timeline  user:", user);
     const photos = usePhotos(user);
-    console.log("The user PHOTOS in the timeline:", photos);
 
     return (
         <div className="container col-span-2">

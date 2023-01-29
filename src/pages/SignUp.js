@@ -41,7 +41,7 @@ const Login = () => {
                     })
                     history.push(ROUTES.DASHBOARD);
                 } catch (error) {
-                    console.log(error.message);
+                    console.error(error.message);
                     setError(error.message);
 
                 }
@@ -50,7 +50,7 @@ const Login = () => {
                 setError("The username already exist, please Login instead.")
             }
         } catch (error) {
-            console.log("ERROR: ", error);
+            console.error("ERROR: ", error);
             setError(error.message);
         }
     }

@@ -5,7 +5,7 @@ import UserContext from '../../context/UserContext';
 
 export default function Sidebar() {
     const user = useContext(UserContext);
-    console.log("***** Sidebar  user:", user);
+
     return (
         <div className="p-4">
             <LoggedUser user={user} />

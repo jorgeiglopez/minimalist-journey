@@ -1,14 +1,12 @@
 import {useState} from 'react';
 import {Link} from 'react-router-dom';
 import {updateFollowedUserFollowers, updateLoggedInUserFollowing,} from '../../services/FirebaseServcie';
+import {DEFAULT_AVATAR_IMAGE_PATH} from "../../constants/DevConstants";
 
-export default function SuggestedProfile({username, uid, docId, avatarUrl}) {
+export default function SuggestedProfile({user: {username, docId, uid, firstName, lastName, avatarUrl}}) {
     const [followed, setFollowed] = useState(false);
 
-    console.log(avatarUrl);
-
     async function handleFollowUser() {
-        console.log('-------Calling handleFollowUser----');
         setFollowed(true);
         await updateLoggedInUserFollowing(docId, uid, false);
         await updateFollowedUserFollowers(docId, uid, false);
@@ -19,15 +17,16 @@ export default function SuggestedProfile({username, uid, docId, avatarUrl}) {
             <div className="flex items-center justify-between">
                 <img
                     className="rounded-full w-8 flex mr-3"
-                    src={avatarUrl || '/images/avatars/default.png'}
+                    src={avatarUrl || DEFAULT_AVATAR_IMAGE_PATH}
                     alt={'Avatar for' + username}
                     onError={(e) => {
-                        e.target.src = `/images/avatars/default.png`;
+                        e.target.src = DEFAULT_AVATAR_IMAGE_PATH;
                     }}
                 />
-                <Link to={`/p/${username}`}>
-                    <p className="font-bold text-sm">{username}</p>
-                </Link>
+                <div className="col-span-3">
+                    <Link to={`/p/${username}`}><p className="font-bold text-sm">{username}</p></Link>
+                    <p className="text-xs">{`${firstName} ${lastName}`}</p>
+                </div>
             </div>
             <button
                 className="text-xs font-bold text-blue-medium"
