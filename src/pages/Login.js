@@ -1,6 +1,6 @@
 import React, {useContext, useEffect, useState} from "react";
 import {Link, useHistory} from "react-router-dom";
-import FirebaseContext from "../context/FirebaseCxt";
+import FirebaseContext from "../context/FirebaseContext";
 import * as ROUTES from '../constants/Routes';
 import {isEmpty, validateEmail} from "../helpers/HelperFunctions";
 
@@ -37,7 +37,7 @@ const Login = () => {
     return (
         <div className="container flex mx-auto max-w-screen-md items-center h-screen">
             <div className="flex w-3/5 mr-6">
-                <img src="images/simplify/diente_de_leon.png" alt="iPhone with Instagram app"/>
+                <img src="images/simplify/login_dandelion.png" alt="iPhone with Instagram app"/>
             </div>
             <div className="flex flex-col w-2/5">
                 <div className="flex flex-col items-center bg-white p-4 border border-gray-primary mb-4 rounded">
@@ -69,7 +69,7 @@ const Login = () => {
                         <button
                             disabled={isInvalid}
                             type="submit"
-                            className={`bg-brown-medium text-white w-full rounded h-8 font-bold ${isInvalid && 'opacity-50'}`}
+                            className={`bg-brown-medium text-white w-full rounded h-8 font-bold ${isInvalid && 'opacity-50'} mt-2 mb-2`}
                         >
                             Login
                         </button>

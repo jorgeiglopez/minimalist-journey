@@ -1,15 +1,14 @@
 import {useContext} from "react";
-import LoggedInUserContext from "../context/LoggedUserCtx";
+import UserContext from "../context/UserContext";
 import usePhotos from "../hooks/UsePhotos";
 import Skeleton from "react-loading-skeleton";
 import Post from "./post";
 
 const Timeline = () => {
-
-    const { user } = useContext(LoggedInUserContext);
-    console.log("The user in the timeline:", user);
-    const photos = usePhotos({userId: '2'});
-    console.log("The user PHOTOS in the timeline:", photos);
+    const user = useContext(UserContext);
+    // console.log("***** Timeline  user:", user);
+    const photos = usePhotos(user.userId);
+    // console.log("The user PHOTOS in the timeline:", photos);
 
     return (
         <div className="container col-span-2">

@@ -1,10 +1,11 @@
 import { useContext } from 'react';
 import User from './User';
 import Suggestions from './Suggestions';
-import LoggedInUserContext from '../../context/LoggedUserCtx';
+import UserContext from '../../context/UserContext';
 
 export default function Sidebar() {
-    const { user } = useContext(LoggedInUserContext);
+    const user = useContext(UserContext);
+    console.log("***** Sidebar  user:", user);
     return (
         <div className="p-4">
             <User username={user?.username} fullName={user?.fullName} />
