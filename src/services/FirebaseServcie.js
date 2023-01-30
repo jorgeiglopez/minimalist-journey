@@ -5,7 +5,7 @@ import {LOCAL_STORAGE_AUTH_USER} from "../constants/DevConstants";
 const DEFAULT_NUMBER_OF_SUGGESTED_PROFILES = 10;
 
 
-export async function doesUsernameExist(username) {
+export const doesUsernameExist = async (username) => {
     const result = await firebase.firestore()
         .collection(COLLEC_USERS)
         .where('username', '==', username?.toLowerCase())
@@ -57,7 +57,7 @@ export const getSuggestedProfiles = async (uid, following) => {
 }
 
 const updateUserByDocId = async (docId, updateObject) => {
-    try{
+    try {
         const userDocRef = firebase.firestore()
             .collection(COLLEC_USERS)
             .doc(docId);
@@ -84,32 +84,45 @@ export async function getUsersPhotos(user) {
         .get();
 }
 
-// No exception handling on this method!
-export const createUserWithUniqueUsername = async ({username, email, password, firstName, lastName, avatarUrl}) => {
-        if(await doesUsernameExist(username)){
+export const createUserWithUniqueUsername = async ({username, email, password, firstName, lastName, avatarUrl, dob, createdOn}) => {
+    let authServiceResponse;
+    let firestoreResponse;
+    try {
+        if (await doesUsernameExist(username)) {
             throw new Error(`The username: ${username} has been taken`);
         }
 
-        const createResponse = await firebase.auth()
+        authServiceResponse = await firebase.auth()
             .createUserWithEmailAndPassword(email, password);
 
         // update the displayName in FirebaseAuth
-        await createResponse.user.updateProfile({
+        await authServiceResponse.user.updateProfile({
             displayName: username.toLowerCase()
         });
 
         // once the FirebaseAuth has been recorded, create the Firestore record
-        const docRef = firebase.firestore().collection(COLLEC_USERS).doc(createResponse.user.uid);
-        await docRef.set({
+        const docRef = firebase.firestore().collection(COLLEC_USERS).doc(authServiceResponse.user.uid);
+        firestoreResponse = await docRef.set({
             username: username.toLowerCase(),
             firstName,
             lastName,
             email: email.toLowerCase(),
-            dateCreated: Date.now(),
-            avatarUrl,
+            createdOn: createdOn || Date.now(),
+            avatarUrl: avatarUrl || null,
+            dob: dob || null,
             following: [],
             followers: []
         });
+
+    } catch (error) {
+        // If the account gets created in Auth service, then it's impossible to re-try with different username, since the
+        // email address will be taken. Hence, we delete the fresh user, to allow create again.
+        if (authServiceResponse && authServiceResponse.user && !firestoreResponse) {
+            console.log("Removing user when response: ", await authServiceResponse.user.delete());
+        }
+        console.error('Error while creating user:', error.message);
+        throw new Error(error);
+    }
 }
 
 export const loginWithEmailAndPassword = async (email, password) => {
