@@ -7,7 +7,7 @@ import UserContext from "../context/UserContext";
 
 const Header = () => {
     const {firebase} = useContext(FirebaseContext);
-    const user = useContext(UserContext);
+    const activeUser = useContext(UserContext);
     const history = useHistory();
 
     const LinkToHomePage = <Link to={ROUTES.DASHBOARD} aria-label="Dashboard">
@@ -57,11 +57,11 @@ const Header = () => {
         </svg>
     </button>;
 
-    const UserAvatar = <Link to={`/p/${user?.username}`}>
+    const UserAvatar = <Link to={`/p/${activeUser?.username}`}>
         <img
             className="rounded-full h-8 w-8 mr-4"
-            src={user?.avatarUrl || DEFAULT_AVATAR_IMAGE_PATH}
-            alt={`${user?.username} profile`}
+            src={activeUser?.avatarUrl || DEFAULT_AVATAR_IMAGE_PATH}
+            alt={`${activeUser?.username} profile`}
             onError={(e) => {
                 e.target.src = DEFAULT_AVATAR_IMAGE_PATH;
             }}
@@ -81,7 +81,7 @@ const Header = () => {
                         </h1>
                     </div>
                     <div className="text-gray-700 text-center flex items-center align-items">
-                        {user ? (
+                        {activeUser ? (
                             <>
                                 {LinkToHomePage}
                                 {SignOutButton}

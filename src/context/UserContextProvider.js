@@ -1,9 +1,9 @@
-import useUser from "../hooks/UseUser";
 import UserContext from "./UserContext";
+import useUser from "../hooks/UseUser";
 
 const UserContextProvider = (props) => {
-    const userInfo = useUser() || null;
-    return <UserContext.Provider value={userInfo} {...props}/>
+    const activeUser = useUser() || null;
+    return <UserContext.Provider value={activeUser} {...props}/>
 };
 
 export default UserContextProvider;

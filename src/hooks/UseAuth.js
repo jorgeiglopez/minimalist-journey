@@ -5,14 +5,14 @@ import FirebaseContext from "../context/FirebaseContext";
 const useAuth = () => {
     const {firebase} = useContext(FirebaseContext);
 
-    const [firebaseUser, setFirebaseUser] = useState();
+    const [activeUser, setActiveUser] = useState();
 
     useEffect(() => {
         const userListener = firebase.auth().onAuthStateChanged((authUser) => {
             if (authUser) {
                 const cachedUser = JSON.parse(localStorage.getItem(LOCAL_STORAGE_AUTH_USER));
                 if (cachedUser && cachedUser?.uid === authUser.uid) {
-                    setFirebaseUser(cachedUser);
+                    setActiveUser(cachedUser);
                 }
                 else {
                     localStorage.removeItem(LOCAL_STORAGE_AUTH_USER);
@@ -20,15 +20,15 @@ const useAuth = () => {
             }
             else {
                 localStorage.removeItem(LOCAL_STORAGE_AUTH_USER);
-                setFirebaseUser(null);
+                setActiveUser(null);
             }
         });
 
         return () => userListener();
 
-    }, [JSON.stringify(firebase.auth())]);
+    }, [JSON.stringify(firebase.auth().user)]);
 
-    return firebaseUser;
+    return activeUser;
 };
 
 export default useAuth;

@@ -2,30 +2,22 @@ import {FieldValue, firebase} from "../lib/Firebase";
 import {COLLEC_PHOTOS, COLLEC_USERS, USER_ID_FIELD} from "../constants/FirebaseCollections";
 import {LOCAL_STORAGE_AUTH_USER} from "../constants/DevConstants";
 
-const DEFAULT_NUMBER_OF_SUGGESTED_PROFILES = 10;
-
-
-export const doesUsernameExist = async (username) => {
-    const result = await firebase.firestore()
-        .collection(COLLEC_USERS)
-        .where('username', '==', username?.toLowerCase())
-        .get();
-
-    return result?.docs?.length !== 0;
-}
 
 export async function getUserByUID(uid) {
     if (!uid) return null;
-    const result = await firebase.firestore()
-        .collection(COLLEC_USERS)
-        .where(USER_ID_FIELD, '==', uid)
-        .get();
 
-    // return await result?.docs?.length > 0 ? {...await result.docs[0].data(), docId: result.docs[0].id} : null;
-    return result?.docs?.length > 0 ? result.docs.map((item) => ({
-        ...item.data(),
-        docId: item.id
-    }))[0] : null;
+    try {
+        const userRef = firebase.firestore().collection(COLLEC_USERS).doc(uid);
+        const userSnapshot = await userRef.get();
+        if (!userSnapshot.exists) {
+            console.error('User not found', uid);
+            return null
+        }
+        return {...userSnapshot.data(), uid: uid};
+    } catch (error) {
+        console.error('Error getting user: ', error);
+        return null;
+    }
 }
 
 const mapFirestoreDocsToUser = (response) => {
@@ -33,24 +25,24 @@ const mapFirestoreDocsToUser = (response) => {
         return null;
     }
 
-    return response.docs.map((doc) => ({
+    return response.docs.map(doc => ({
         ...doc.data(),
-        docId: doc.id
+        uid: doc.id
     }));
 }
 
-export const getSuggestedProfiles = async (uid, following) => {
-    let result = null;
+export const getSuggestedProfiles = async (toExclude, limit = 10) => {
+    let result = [];
 
     try {
         const response = await firebase.firestore().collection(COLLEC_USERS)
-            .where(USER_ID_FIELD, 'not-in', [...following, uid])
-            .limit(DEFAULT_NUMBER_OF_SUGGESTED_PROFILES)
+            .where('__name__', 'not-in', toExclude)
+            .limit(limit)
             .get();
 
         result = mapFirestoreDocsToUser(response);
     } catch (error) {
-        console.error(error);
+        console.error('Error while getting suggested profiles: ', error.message);
     }
 
     return result;
@@ -84,11 +76,20 @@ export async function getUsersPhotos(user) {
         .get();
 }
 
+const validateUsernameUniqueness = async (username) => {
+    const result = await firebase.firestore()
+        .collection(COLLEC_USERS)
+        .where('username', '==', username?.toLowerCase())
+        .get();
+
+    return result?.docs?.length !== 0;
+}
+
 export const createUserWithUniqueUsername = async ({username, email, password, firstName, lastName, avatarUrl, dob, createdOn}) => {
     let authServiceResponse;
     let firestoreResponse;
     try {
-        if (await doesUsernameExist(username)) {
+        if (await validateUsernameUniqueness(username)) {
             throw new Error(`The username: ${username} has been taken`);
         }
 
