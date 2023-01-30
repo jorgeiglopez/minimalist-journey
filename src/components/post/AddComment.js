@@ -1,17 +1,17 @@
-import { useState, useContext } from 'react';
+import {useContext, useState} from 'react';
 import FirebaseContext from '../../context/FirebaseContext';
-import UserContext from "../../context/UserContext";
+import useAuth from "../../hooks/UseAuth";
 
-export default function AddComment({ docId, comments, setComments, commentInput }) {
+export default function AddComment({docId, comments, setComments, commentInput}) {
     const [comment, setComment] = useState('');
-    const { firebase, FieldValue } = useContext(FirebaseContext);
-    const user = useContext(UserContext);
+    const {firebase, FieldValue} = useContext(FirebaseContext);
+    const [activeUser] = useAuth();
 
     const handleSubmitComment = (event) => {
-        const displayName = `${user.firstName} ${user.lastName}`;
+        const displayName = `${activeUser.firstName} ${activeUser.lastName}`;
         event.preventDefault();
 
-        setComments([...comments, { displayName, comment }]);
+        setComments([...comments, {displayName, comment}]);
         setComment('');
 
         return firebase
@@ -19,7 +19,7 @@ export default function AddComment({ docId, comments, setComments, commentInput 
             .collection('photos')
             .doc(docId)
             .update({
-                comments: FieldValue.arrayUnion({ displayName, comment })
+                comments: FieldValue.arrayUnion({displayName, comment})
             });
     };
 
@@ -40,7 +40,7 @@ export default function AddComment({ docId, comments, setComments, commentInput 
                     name="add-comment"
                     placeholder="Add a comment..."
                     value={comment}
-                    onChange={({ target }) => setComment(target.value)}
+                    onChange={({target}) => setComment(target.value)}
                     ref={commentInput}
                 />
                 <button

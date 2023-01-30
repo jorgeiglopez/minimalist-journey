@@ -3,11 +3,11 @@ import {useContext} from "react";
 import {Link, useHistory} from "react-router-dom";
 import * as ROUTES from "../constants/Routes";
 import {DEFAULT_AVATAR_IMAGE_PATH} from "../constants/DevConstants";
-import UserContext from "../context/UserContext";
+import useAuth from "../hooks/UseAuth";
 
 const Header = () => {
     const {firebase} = useContext(FirebaseContext);
-    const activeUser = useContext(UserContext);
+    const [activeUser] = useAuth();
     const history = useHistory();
 
     const LinkToHomePage = <Link to={ROUTES.DASHBOARD} aria-label="Dashboard">

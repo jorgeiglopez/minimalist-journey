@@ -1,11 +1,10 @@
-import { Link } from 'react-router-dom';
+import {Link} from 'react-router-dom';
 import Skeleton from 'react-loading-skeleton';
-import { DEFAULT_AVATAR_IMAGE_PATH } from '../../constants/DevConstants';
-import UserContext from "../../context/UserContext";
-import {useContext} from "react";
+import {DEFAULT_AVATAR_IMAGE_PATH} from '../../constants/DevConstants';
+import useAuth from "../../hooks/UseAuth";
 
 export default function ActiveUser() {
-    const activeUser = useContext(UserContext);
+    const [activeUser] = useAuth();
 
     return !activeUser ? (
         <Skeleton count={1} height={61} />

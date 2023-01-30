@@ -1,12 +1,12 @@
-import { useState, useContext } from 'react';
+import {useContext, useState} from 'react';
 import FirebaseContext from '../../context/FirebaseContext';
-import UserContext from "../../context/UserContext";
+import useAuth from "../../hooks/UseAuth";
 
-export default function Action({ docId, totalLikes, likedPhoto, handleFocus }) {
-    const user = useContext(UserContext);
+export default function Action({docId, totalLikes, likedPhoto, handleFocus}) {
+    const [activeUser] = useAuth();
     const [toggleLiked, setToggleLiked] = useState(likedPhoto);
     const [likes, setLikes] = useState(totalLikes);
-    const { firebase, FieldValue } = useContext(FirebaseContext);
+    const {firebase, FieldValue} = useContext(FirebaseContext);
 
     const handleToggleLiked = async () => {
         setToggleLiked((toggleLiked) => !toggleLiked);
@@ -16,7 +16,7 @@ export default function Action({ docId, totalLikes, likedPhoto, handleFocus }) {
             .collection('photos')
             .doc(docId)
             .update({
-                likes: toggleLiked ? FieldValue.arrayRemove(user.uid) : FieldValue.arrayUnion(user.uid)
+                likes: toggleLiked ? FieldValue.arrayRemove(activeUser.uid) : FieldValue.arrayUnion(activeUser.uid)
             });
 
         setLikes((likes) => (toggleLiked ? likes - 1 : likes + 1));

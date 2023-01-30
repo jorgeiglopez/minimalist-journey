@@ -1,6 +1,6 @@
 import {useState} from "react";
 import {Link} from 'react-router-dom';
-import {updateFollowersByDocId, updateFollowingByDocId,} from '../../services/FirebaseServcie';
+import {updateFollowersByUID, updateFollowingByUID,} from '../../services/FirebaseServcie';
 import {DEFAULT_AVATAR_IMAGE_PATH} from "../../constants/DevConstants";
 
 export default function SuggestedProfile({activeUser, profile: {uid, avatarUrl, username, firstName, lastName}, exclude, setExclude}) {
@@ -9,8 +9,8 @@ export default function SuggestedProfile({activeUser, profile: {uid, avatarUrl, 
 
     async function handleFollowUser() {
         setProcessing(true);
-        await updateFollowingByDocId(activeUser.uid, uid);
-        await updateFollowersByDocId(uid, activeUser.uid);
+        await updateFollowingByUID(activeUser.uid, uid);
+        await updateFollowersByUID(uid, activeUser.uid);
         setExclude([...exclude, uid]);
     }
 
@@ -33,7 +33,7 @@ export default function SuggestedProfile({activeUser, profile: {uid, avatarUrl, 
                     className={"text-xs font-bold " + (processing ? "text-grey-medium cursor-not-allowed opacity-40" : "text-blue-medium")}
                     onClick={handleFollowUser}
                     disabled={processing}>
-                {processing? 'Following...' : 'Follow'}
+                {processing ? 'Following...' : 'Follow'}
             </button>
         </div>
     );

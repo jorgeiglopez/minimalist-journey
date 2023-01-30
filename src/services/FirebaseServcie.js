@@ -1,6 +1,7 @@
 import {FieldValue, firebase} from "../lib/Firebase";
 import {COLLEC_PHOTOS, COLLEC_USERS, USER_ID_FIELD} from "../constants/FirebaseCollections";
 import {LOCAL_STORAGE_AUTH_USER} from "../constants/DevConstants";
+import useAuth from "../hooks/UseAuth";
 
 
 export async function getUserByUID(uid) {
@@ -48,24 +49,24 @@ export const getSuggestedProfiles = async (toExclude, limit = 10) => {
     return result;
 }
 
-const updateUserByDocId = async (docId, updateObject) => {
+const updateUserByUID = async (uid, updateObject) => {
     try {
         const userDocRef = firebase.firestore()
             .collection(COLLEC_USERS)
-            .doc(docId);
+            .doc(uid);
 
         await userDocRef.update(updateObject);
     } catch (error) {
-        console.error(`ERROR updating docId: ${docId} - `, error);
+        console.error(`ERROR updating uid: ${uid} - `, error);
     }
 }
 
-export const updateFollowingByDocId = async (docId, uidToFollow, isFollowingProfile) => {
-    await updateUserByDocId(docId, {following: FieldValue.arrayUnion(uidToFollow)});
+export const updateFollowingByUID = async (currentUserUid, uidToFollow) => {
+    await updateUserByUID(currentUserUid, {following: FieldValue.arrayUnion(uidToFollow)});
 }
 
-export const updateFollowersByDocId = async (docId, uidAsAFollower, isFollowingProfile) => {
-    await updateUserByDocId(docId, {followers: FieldValue.arrayUnion(uidAsAFollower)});
+export const updateFollowersByUID = async (currentUserUid, uidAsAFollower) => {
+    await updateUserByUID(currentUserUid, {followers: FieldValue.arrayUnion(uidAsAFollower)});
 }
 
 export async function getUsersPhotos(user) {
@@ -126,7 +127,7 @@ export const createUserWithUniqueUsername = async ({username, email, password, f
     }
 }
 
-export const loginWithEmailAndPassword = async (email, password) => {
+export const loginWithEmailAndPassword = async (email, password, setActiveUser) => {
     try {
         const signedInUser = await firebase.auth().signInWithEmailAndPassword(email, password);
         const idTokenResult = await signedInUser.user.getIdTokenResult();
@@ -140,10 +141,16 @@ export const loginWithEmailAndPassword = async (email, password) => {
             isAnonymous,
             idToken: idTokenResult?.token,
             expiresIn: idTokenResult?.claims?.exp,
-            refreshToken
+            refreshToken,
+            firstName: '',
+            lastName: '',
+            avatarUrl: '',
+            following: [],
+            followers: []
         }
 
-        localStorage.setItem(LOCAL_STORAGE_AUTH_USER, JSON.stringify(cachedUser));
+        setActiveUser(cachedUser);
+        // localStorage.setItem(LOCAL_STORAGE_AUTH_USER, JSON.stringify(cachedUser));
 
     } catch (error) {
         console.error('Error signing in: ', error);

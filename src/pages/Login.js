@@ -3,14 +3,16 @@ import {Link, useHistory} from "react-router-dom";
 import * as ROUTES from '../constants/Routes';
 import {isEmpty, validateEmail} from "../helpers/HelperFunctions";
 import {loginWithEmailAndPassword} from "../services/FirebaseServcie";
+import useAuth from "../hooks/UseAuth";
 
 
 const Login = () => {
     // TODO: check if user is signed in, and re-direct to the dashboard instead
     const history = useHistory();
+    const [, setActiveUser] = useAuth();
 
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
+    const [email, setEmail] = useState('@got.com');
+    const [password, setPassword] = useState('password');
     const [error, setError] = useState('');
 
     const isInvalid = !validateEmail(email) || isEmpty(password);
@@ -18,7 +20,7 @@ const Login = () => {
     const handleLogin = async (event) => {
         event.preventDefault();
         try {
-            await loginWithEmailAndPassword(email, password)
+            await loginWithEmailAndPassword(email, password, setActiveUser);
             history.push(ROUTES.DASHBOARD);
         } catch (error) {
             setError(error.message);
