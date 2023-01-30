@@ -1,56 +1,39 @@
-import React, {useContext, useEffect, useState} from "react";
+import React, {useEffect, useState} from "react";
 import {Link, useHistory} from "react-router-dom";
-import FirebaseContext from "../context/FirebaseContext";
 import * as ROUTES from '../constants/Routes';
-import {doesUsernameExist} from "../services/FirebaseServcie";
+import {createUserWithUniqueUsername} from "../services/FirebaseServcie";
 import {isEmpty, validateEmail} from "../helpers/HelperFunctions";
-import {COLLEC_USERS} from "../constants/FirebaseCollections";
 
 
 const Login = () => {
+    // TODO: check if user is signed in, and re-direct to the dashboard instead
     const history = useHistory();
-    const {firebase} = useContext(FirebaseContext);
 
-    const [emailAddress, setEmailAddress] = useState('');
+    const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [username, setUsername] = useState('');
     const [firstName, setFirstName] = useState('');
     const [lastName, setLastName] = useState('');
     const [error, setError] = useState('');
 
-    const isInvalid = !validateEmail(emailAddress) || isEmpty(password) || isEmpty(username) || isEmpty(firstName) || isEmpty(lastName);
+    const isInvalid = !validateEmail(email) || isEmpty(password) || isEmpty(username) || isEmpty(firstName) || isEmpty(lastName);
 
     const handleSignup = async (event) => {
         event.preventDefault();
+
         try {
-            const exist = await doesUsernameExist(username);
-            if (!exist) {
-                try {
-                    const createUserResult = await firebase.auth().createUserWithEmailAndPassword(emailAddress, password);
+            await createUserWithUniqueUsername({
+                username,
+                email,
+                password,
+                firstName,
+                lastName
+            });
 
-                    await createUserResult.user.updateProfile({displayName: username.toLowerCase()});
+            history.push(ROUTES.DASHBOARD);
 
-                    await firebase.firestore().collection(COLLEC_USERS).add({
-                        uid: createUserResult.user.uid, // The UID is coming from the Auth service. It's the link between the 2 entities.
-                        username: username.toLowerCase(),
-                        firstName,
-                        lastName,
-                        emailAddress: emailAddress.toLowerCase(),
-                        following: [],
-                        dateCreated: Date.now()
-                    })
-                    history.push(ROUTES.DASHBOARD);
-                } catch (error) {
-                    console.error(error.message);
-                    setError(error.message);
-
-                }
-
-            } else {
-                setError("The username already exist, please Login instead.")
-            }
         } catch (error) {
-            console.error("ERROR: ", error);
+            console.error("Error while creating user: ", error);
             setError(error.message);
         }
     }
@@ -106,8 +89,8 @@ const Login = () => {
                             placeholder="Email address"
                             autoComplete="on"
                             className="text-sm text-gray-base w-full mr-3 py-5 px-4 h-2 border border-gray-primary rounded mb-2"
-                            onChange={e => setEmailAddress(e.target.value)}
-                            value={emailAddress}
+                            onChange={e => setEmail(e.target.value)}
+                            value={email}
                         />
                         <input
                             aria-label="Enter your password"

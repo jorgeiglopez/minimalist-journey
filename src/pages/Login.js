@@ -1,29 +1,24 @@
-import React, {useContext, useEffect, useState} from "react";
+import React, {useEffect, useState} from "react";
 import {Link, useHistory} from "react-router-dom";
-import FirebaseContext from "../context/FirebaseContext";
 import * as ROUTES from '../constants/Routes';
 import {isEmpty, validateEmail} from "../helpers/HelperFunctions";
-
-// TODO:
-//  - Email proper validation - touched, loose focus
-//  - Add captcha
-//  - Encrypt password
+import {loginWithEmailAndPassword} from "../services/FirebaseServcie";
 
 
 const Login = () => {
+    // TODO: check if user is signed in, and re-direct to the dashboard instead
     const history = useHistory();
-    const {firebase} = useContext(FirebaseContext);
 
-    const [emailAddress, setEmailAddress] = useState('');
+    const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
 
-    const isInvalid = !validateEmail(emailAddress) || isEmpty(password);
+    const isInvalid = !validateEmail(email) || isEmpty(password);
 
     const handleLogin = async (event) => {
         event.preventDefault();
         try {
-            await firebase.auth().signInWithEmailAndPassword(emailAddress, password);
+            await loginWithEmailAndPassword(email, password)
             history.push(ROUTES.DASHBOARD);
         } catch (error) {
             setError(error.message);
@@ -56,8 +51,8 @@ const Login = () => {
                             placeholder="Email"
                             autoComplete="email"
                             className="text-sm text-gray-base w-full mr-3 py-5 px-4 h-2 border border-gray-primary rounded mb-2"
-                            onChange={e => setEmailAddress(e.target.value)}
-                            value={emailAddress}
+                            onChange={e => setEmail(e.target.value)}
+                            value={email}
                         />
                         <input
                             id="password"
