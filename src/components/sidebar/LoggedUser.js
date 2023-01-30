@@ -1,8 +1,12 @@
 import { Link } from 'react-router-dom';
 import Skeleton from 'react-loading-skeleton';
 import { DEFAULT_AVATAR_IMAGE_PATH } from '../../constants/DevConstants';
+import UserContext from "../../context/UserContext";
+import {useContext} from "react";
 
-export default function LoggedUser({user}) {
+export default function LoggedUser() {
+    const user = useContext(UserContext);
+
     return !user ? (
         <Skeleton count={1} height={61} />
     ) : (

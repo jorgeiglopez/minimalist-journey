@@ -1,15 +1,15 @@
 import {useState} from 'react';
 import {Link} from 'react-router-dom';
-import {updateFollowedUserFollowers, updateLoggedInUserFollowing,} from '../../services/FirebaseServcie';
+import {updateFollowersByDocId, updateFollowingByDocId,} from '../../services/FirebaseServcie';
 import {DEFAULT_AVATAR_IMAGE_PATH} from "../../constants/DevConstants";
 
-export default function SuggestedProfile({user: {username, docId, uid, firstName, lastName, avatarUrl}}) {
+export default function SuggestedProfile({activeUser, profile: {docId, uid, avatarUrl, username, firstName, lastName}}) {
     const [followed, setFollowed] = useState(false);
 
     async function handleFollowUser() {
         setFollowed(true);
-        await updateLoggedInUserFollowing(docId, uid, false);
-        await updateFollowedUserFollowers(docId, uid, false);
+        await updateFollowingByDocId(activeUser.docId, uid, false);
+        await updateFollowersByDocId(docId, activeUser.uid, false);
     }
 
     return !followed ? (

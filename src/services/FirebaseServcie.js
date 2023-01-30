@@ -1,6 +1,8 @@
 import {FieldValue, firebase} from "../lib/Firebase";
 import {COLLEC_PHOTOS, COLLEC_USERS, USER_ID_FIELD} from "../constants/FirebaseCollections";
 
+const DEFAULT_NUMBER_OF_SUGGESTED_PROFILES = 10;
+
 
 export async function doesUsernameExist(username) {
     const result = await firebase.firestore()
@@ -25,52 +27,52 @@ export async function getUserByUID(uid) {
     }))[0] : null;
 }
 
-export async function getSuggestedProfiles(uid, following) {
-    let query = firebase.firestore().collection(COLLEC_USERS);
+const mapFirestoreDocsToUser = (response) => {
+    if (!response || !response.docs || response.docs.length === 0) {
+        return null;
+    }
 
-    if (following && following.length > 0) {
-        query = query.where(USER_ID_FIELD, 'not-in', [...following, uid]);
-    }
-    else {
-        query = query.where(USER_ID_FIELD, '!=', uid);
-    }
-    const result = await query.limit(10).get();
-    return result.docs.map((user) => ({
-        ...user.data(),
-        docId: user.id
+    return response.docs.map((doc) => ({
+        ...doc.data(),
+        docId: doc.id
     }));
 }
 
-export async function updateLoggedInUserFollowing( // TODO: FIX
-    docId, // currently logged in user document id (karl's profile)
-    uid, // the user that karl requests to follow
-    isFollowingProfile // true/false (am i currently following this person?)
-) {
-    return firebase
-        .firestore()
-        .collection(COLLEC_USERS)
-        .doc(docId)
-        .update({
-            following: isFollowingProfile ?
-                FieldValue.arrayRemove(uid) :
-                FieldValue.arrayUnion(uid)
-        });
+export const getSuggestedProfiles = async (uid, following) => {
+    let result = null;
+
+    try {
+        const response = await firebase.firestore().collection(COLLEC_USERS)
+            .where(USER_ID_FIELD, 'not-in', [...following, uid])
+            .limit(DEFAULT_NUMBER_OF_SUGGESTED_PROFILES)
+            .get();
+
+        result = mapFirestoreDocsToUser(response);
+    } catch (error) {
+        console.error(error);
+    }
+
+    return result;
 }
 
-export async function updateFollowedUserFollowers( // TODO: FIX
-    docId, // currently logged in user document id (karl's profile)
-    uid, // the user that karl requests to follow
-    isFollowingProfile // true/false (am i currently following this person?)
-) {
-    return firebase
-        .firestore()
-        .collection(COLLEC_USERS)
-        .doc(docId)
-        .update({
-            followers: isFollowingProfile ?
-                FieldValue.arrayRemove(uid) :
-                FieldValue.arrayUnion(uid)
-        });
+const updateUserByDocId = async (docId, updateObject) => {
+    try{
+        const userDocRef = firebase.firestore()
+            .collection(COLLEC_USERS)
+            .doc(docId);
+
+        await userDocRef.update(updateObject);
+    } catch (error) {
+        console.error(`ERROR updating docId: ${docId} - `, error);
+    }
+}
+
+export const updateFollowingByDocId = async (docId, uidToFollow, isFollowingProfile) => {
+    await updateUserByDocId(docId, {following: FieldValue.arrayUnion(uidToFollow)});
+}
+
+export const updateFollowersByDocId = async (docId, uidAsAFollower, isFollowingProfile) => {
+    await updateUserByDocId(docId, {followers: FieldValue.arrayUnion(uidAsAFollower)});
 }
 
 export async function getUsersPhotos(user) {

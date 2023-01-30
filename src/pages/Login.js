@@ -50,9 +50,10 @@ const Login = () => {
                     <form onSubmit={handleLogin} method="POST">
                         <input
                             id="email"
+                            name="email"
                             aria-label="Enter your email address"
                             type="email"
-                            placeholder="Email address"
+                            placeholder="Email"
                             autoComplete="email"
                             className="text-sm text-gray-base w-full mr-3 py-5 px-4 h-2 border border-gray-primary rounded mb-2"
                             onChange={e => setEmailAddress(e.target.value)}
@@ -60,9 +61,10 @@ const Login = () => {
                         />
                         <input
                             id="password"
+                            name="password"
                             aria-label="Enter your password"
                             type="password"
-                            autoComplete="current-password"
+                            autoComplete="on"
                             placeholder="Password"
                             className="text-sm text-gray-base w-full mr-3 py-5 px-4 h-2 border border-gray-primary rounded mb-2"
                             onChange={e => setPassword(e.target.value)}
