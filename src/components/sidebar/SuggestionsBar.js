@@ -1,18 +1,17 @@
-import {useEffect, useState} from 'react';
+import {useContext, useEffect, useState} from 'react';
 import Skeleton from 'react-loading-skeleton';
 import SuggestedProfile from './SuggestedProfile';
 import useSuggestion from "../../hooks/useSuggestion";
-import useAuth from "../../hooks/UseAuth";
+import {UserContext} from "../../context/UserContext";
 
 export default function SuggestionsBar() {
-
-    const [activeUser] = useAuth();
+    const activeUser = useContext(UserContext);
     const [exclude, setExclude] = useState([]);
     const [suggestions] = useSuggestion(exclude);
 
     useEffect(() => {
         if (activeUser) {
-            setExclude([activeUser.uid, ...activeUser.following])
+            setExclude([activeUser?.uid, ...activeUser?.following])
         }
     }, [JSON.stringify(activeUser)]);
 

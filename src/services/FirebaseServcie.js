@@ -1,8 +1,5 @@
 import {FieldValue, firebase} from "../lib/Firebase";
 import {COLLEC_PHOTOS, COLLEC_USERS, USER_ID_FIELD} from "../constants/FirebaseCollections";
-import {LOCAL_STORAGE_AUTH_USER} from "../constants/DevConstants";
-import useAuth from "../hooks/UseAuth";
-
 
 export async function getUserByUID(uid) {
     if (!uid) return null;
@@ -156,5 +153,9 @@ export const loginWithEmailAndPassword = async (email, password, setActiveUser) 
         console.error('Error signing in: ', error);
         throw new Error(error);
     }
+}
+
+export const logOutCurrentUser = async () => {
+    await firebase.auth().signOut()
 }
 

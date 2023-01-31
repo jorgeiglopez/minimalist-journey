@@ -1,7 +1,7 @@
 import {useContext, useEffect, useState} from "react";
 import {LOCAL_STORAGE_AUTH_USER} from "../constants/DevConstants";
 import FirebaseContext from "../context/FirebaseContext";
-import {getUserByUID} from "../services/FirebaseServcie";
+import {getUserByUID, logOutCurrentUser} from "../services/FirebaseServcie";
 
 const useAuth = () => {
     const {firebase} = useContext(FirebaseContext);
@@ -17,26 +17,34 @@ const useAuth = () => {
             console.log('****** ActiveUser REMOVED: ');
             localStorage.removeItem(LOCAL_STORAGE_AUTH_USER);
         }
-    }, [activeUser]);
+    }, [JSON.stringify(activeUser)]);
 
     // Listen for changes in the auth user, deleting when logout or fetching the userInfo when auth user is present.
     useEffect(() => {
-        // TODO: read the cached user, and determine if fetching user info or not.
         async function getUserInfo(uid) {
             const userInfo = await getUserByUID(uid);
+            console.log("Fetching getUserByUID() <-----------------");
             setActiveUser({...activeUser, ...userInfo});
         }
 
         const userListener = firebase.auth().onAuthStateChanged((authUser) => {
             if (authUser) {
-                getUserInfo(authUser.uid);
-            }
-            else {
-                setActiveUser(undefined);
+                const cachedUser = JSON.parse(localStorage.getItem(LOCAL_STORAGE_AUTH_USER));
+                if (cachedUser && cachedUser?.firstName && cachedUser?.lastName) {
+                    console.log("------> setting from cache", cachedUser);
+                    setActiveUser(cachedUser);
+                } else {
+                    getUserInfo(authUser.uid);
+                }
+            } else {
+                setActiveUser(null);
             }
         });
 
-        return () => userListener();
+        return () => {
+            logOutCurrentUser()
+            userListener();
+        };
 
     }, [JSON.stringify(firebase.auth().user)]);
 

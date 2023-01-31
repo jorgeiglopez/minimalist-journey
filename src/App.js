@@ -1,6 +1,8 @@
 import {lazy, Suspense} from "react";
 import {BrowserRouter as Router, Route, Switch} from 'react-router-dom'
 import * as ROUTES from './constants/Routes';
+import {UserContext} from "./context/UserContext";
+import useAuth from "./hooks/UseAuth";
 
 const Login = lazy(() => import('./pages/Login'));
 const SignUp = lazy(() => import('./pages/SignUp'));
@@ -9,7 +11,10 @@ const Dashboard = lazy(() => import('./pages/Dashboard'));
 
 function App() {
 
+    const [activeUser] = useAuth();
+
     return (
+        <UserContext.Provider value={activeUser}>
         <Router>
             <Suspense fallback={<p>Loading...</p>}>
                 <Switch>
@@ -21,6 +26,7 @@ function App() {
                 </Switch>
             </Suspense>
         </Router>
+        </UserContext.Provider>
     );
 }
 

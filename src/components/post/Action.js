@@ -1,12 +1,13 @@
 import {useContext, useState} from 'react';
 import FirebaseContext from '../../context/FirebaseContext';
-import useAuth from "../../hooks/UseAuth";
+import {UserContext} from "../../context/UserContext";
 
 export default function Action({docId, totalLikes, likedPhoto, handleFocus}) {
-    const [activeUser] = useAuth();
-    const [toggleLiked, setToggleLiked] = useState(likedPhoto);
-    const [likes, setLikes] = useState(totalLikes);
     const {firebase, FieldValue} = useContext(FirebaseContext);
+    const activeUser = useContext(UserContext);
+
+    const [likes, setLikes] = useState(totalLikes);
+    const [toggleLiked, setToggleLiked] = useState(likedPhoto);
 
     const handleToggleLiked = async () => {
         setToggleLiked((toggleLiked) => !toggleLiked);

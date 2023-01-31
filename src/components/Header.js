@@ -3,11 +3,11 @@ import {useContext} from "react";
 import {Link, useHistory} from "react-router-dom";
 import * as ROUTES from "../constants/Routes";
 import {DEFAULT_AVATAR_IMAGE_PATH} from "../constants/DevConstants";
-import useAuth from "../hooks/UseAuth";
+import {UserContext} from "../context/UserContext";
+import {logOutCurrentUser} from "../services/FirebaseServcie";
 
 const Header = () => {
-    const {firebase} = useContext(FirebaseContext);
-    const [activeUser] = useAuth();
+    const activeUser = useContext(UserContext);
     const history = useHistory();
 
     const LinkToHomePage = <Link to={ROUTES.DASHBOARD} aria-label="Dashboard">
@@ -31,12 +31,12 @@ const Header = () => {
         type="button"
         title="Sign Out"
         onClick={() => {
-            firebase.auth().signOut();
+            logOutCurrentUser();
             history.push(ROUTES.LOGIN);
         }}
         onKeyDown={(event) => {
             if (event.key === 'Enter') {
-                firebase.auth().signOut();
+                logOutCurrentUser();
                 history.push(ROUTES.LOGIN);
             }
         }}

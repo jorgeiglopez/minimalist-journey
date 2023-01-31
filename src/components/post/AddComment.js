@@ -1,11 +1,11 @@
 import {useContext, useState} from 'react';
 import FirebaseContext from '../../context/FirebaseContext';
-import useAuth from "../../hooks/UseAuth";
+import {UserContext} from "../../context/UserContext";
 
 export default function AddComment({docId, comments, setComments, commentInput}) {
-    const [comment, setComment] = useState('');
     const {firebase, FieldValue} = useContext(FirebaseContext);
-    const [activeUser] = useAuth();
+    const activeUser = useContext(UserContext);
+    const [comment, setComment] = useState('');
 
     const handleSubmitComment = (event) => {
         const displayName = `${activeUser.firstName} ${activeUser.lastName}`;

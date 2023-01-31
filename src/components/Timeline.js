@@ -1,10 +1,11 @@
 import usePhotos from "../hooks/UsePhotos";
 import Skeleton from "react-loading-skeleton";
 import Post from "./post";
-import useAuth from "../hooks/UseAuth";
+import {useContext} from "react";
+import {UserContext} from "../context/UserContext";
 
 const Timeline = () => {
-    const [activeUser] = useAuth();
+    const activeUser = useContext(UserContext);
     const photos = usePhotos(activeUser);
 
     return (

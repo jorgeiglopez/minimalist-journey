@@ -1,13 +1,14 @@
 import {Link} from 'react-router-dom';
 import Skeleton from 'react-loading-skeleton';
 import {DEFAULT_AVATAR_IMAGE_PATH} from '../../constants/DevConstants';
-import useAuth from "../../hooks/UseAuth";
+import {useContext} from "react";
+import {UserContext} from "../../context/UserContext";
 
 export default function ActiveUser() {
-    const [activeUser] = useAuth();
+    const activeUser = useContext(UserContext);
 
     return !activeUser ? (
-        <Skeleton count={1} height={61} />
+        <Skeleton count={1} height={61}/>
     ) : (
         <Link to={`/p/${activeUser?.username}`} className="grid grid-cols-4 gap-4 mb-6 items-center">
             <div className="flex items-center justify-between col-span-1">
