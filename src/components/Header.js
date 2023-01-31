@@ -1,4 +1,3 @@
-import FirebaseContext from "../context/FirebaseContext";
 import {useContext} from "react";
 import {Link, useHistory} from "react-router-dom";
 import * as ROUTES from "../constants/Routes";
@@ -7,7 +6,7 @@ import {UserContext} from "../context/UserContext";
 import {logOutCurrentUser} from "../services/FirebaseServcie";
 
 const Header = () => {
-    const activeUser = useContext(UserContext);
+    const [activeUser] = useContext(UserContext);
     const history = useHistory();
 
     const LinkToHomePage = <Link to={ROUTES.DASHBOARD} aria-label="Dashboard">

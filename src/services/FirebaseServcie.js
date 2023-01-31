@@ -1,5 +1,6 @@
 import {FieldValue, firebase} from "../lib/Firebase";
-import {COLLEC_PHOTOS, COLLEC_USERS, USER_ID_FIELD} from "../constants/FirebaseCollections";
+import {COLLEC_POSTS, COLLEC_USERS, USER_ID_FIELD} from "../constants/FirebaseCollections";
+import {mapFirestoreResponse} from "../helpers/HelperFunctions";
 
 export async function getUserByUID(uid) {
     if (!uid) return null;
@@ -18,27 +19,16 @@ export async function getUserByUID(uid) {
     }
 }
 
-const mapFirestoreDocsToUser = (response) => {
-    if (!response || !response.docs || response.docs.length === 0) {
-        return null;
-    }
-
-    return response.docs.map(doc => ({
-        ...doc.data(),
-        uid: doc.id
-    }));
-}
-
 export const getSuggestedProfiles = async (toExclude, limit = 10) => {
     let result = [];
-
+    console.log('to exclude, ', toExclude);
     try {
         const response = await firebase.firestore().collection(COLLEC_USERS)
             .where('__name__', 'not-in', toExclude)
             .limit(limit)
             .get();
 
-        result = mapFirestoreDocsToUser(response);
+        result = mapFirestoreResponse(response, USER_ID_FIELD);
     } catch (error) {
         console.error('Error while getting suggested profiles: ', error.message);
     }
@@ -52,7 +42,8 @@ const updateUserByUID = async (uid, updateObject) => {
             .collection(COLLEC_USERS)
             .doc(uid);
 
-        await userDocRef.update(updateObject);
+        const resp = await userDocRef.update(updateObject);
+        console.log('updateUserByUID',resp);
     } catch (error) {
         console.error(`ERROR updating uid: ${uid} - `, error);
     }
@@ -66,11 +57,15 @@ export const updateFollowersByUID = async (currentUserUid, uidAsAFollower) => {
     await updateUserByUID(currentUserUid, {followers: FieldValue.arrayUnion(uidAsAFollower)});
 }
 
-export async function getUsersPhotos(user) {
+export async function getFollowingPosts(user) {
     if (!user) return null;
+    if (!user?.following || user?.following?.length === 0) return [];
+
     return firebase.firestore()
-        .collection(COLLEC_PHOTOS)
-        .where(USER_ID_FIELD, '==', user?.uid)
+        .collection(COLLEC_POSTS)
+        .where(USER_ID_FIELD, 'in', user?.following)
+        // .orderBy('createdOn', "desc") // The query requires an index. You can create it here
+        .limit(20)
         .get();
 }
 
@@ -157,5 +152,10 @@ export const loginWithEmailAndPassword = async (email, password, setActiveUser) 
 
 export const logOutCurrentUser = async () => {
     await firebase.auth().signOut()
+}
+
+export const savePost = async post => {
+    await firebase.firestore().collection('posts').add(post);
+
 }
 

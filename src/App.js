@@ -11,10 +11,10 @@ const Dashboard = lazy(() => import('./pages/Dashboard'));
 
 function App() {
 
-    const [activeUser] = useAuth();
+    const [activeUser, setActiveUser] = useAuth();
 
     return (
-        <UserContext.Provider value={activeUser}>
+        <UserContext.Provider value={[activeUser, setActiveUser]}>
         <Router>
             <Suspense fallback={<p>Loading...</p>}>
                 <Switch>

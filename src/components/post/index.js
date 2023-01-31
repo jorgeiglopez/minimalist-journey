@@ -5,29 +5,26 @@ import Action from './Action';
 import Footer from './Footer';
 import Comments from './Comment';
 
-export default function Post({ content }) {
+export default function Post({ post }) {
     const commentInput = useRef(null);
-    const handleFocus = () => commentInput.current.focus();
 
-    // components
-    // -> header, image, actions (like & comment icons), footer, comments
+    const handleFocus = () => {
+        commentInput.current.focus()
+    };
+
+    console.log('---------Incoming post: ', post);
     return (
         <div className="rounded col-span-4 border bg-white border-gray-primary mb-12">
-            <Header username={content.username} />
-            <Image src={content.imageSrc} caption={content.caption} />
+            <Header username={post.username} author={post.author} />
+            <Image src={post.imageUrl} caption={post.caption} />
             <Action
-                docId={content.docId}
-                totalLikes={content.likes.length}
-                likedPhoto={content.userLikedPhoto}
+                docId={post.docId}
+                totalLikes={post.likes.length}
+                likedPhoto={false}
                 handleFocus={handleFocus}
             />
-            <Footer caption={content.caption} username={content.username} />
-            <Comments
-                docId={content.docId}
-                comments={content.comments}
-                posted={content.dateCreated}
-                commentInput={commentInput}
-            />
+            <Footer caption={post.caption} username={post.username} createdOn={post.createdOn}/>
+            <Comments docId={post.docId} comments={post.comments} commentInput={commentInput}/>
         </div>
     );
 }

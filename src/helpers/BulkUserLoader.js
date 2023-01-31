@@ -1,4 +1,5 @@
-import {createUserWithUniqueUsername} from "../services/FirebaseServcie";
+import {createUserWithUniqueUsername, savePost} from "../services/FirebaseServcie";
+import {randomUnixTimestamp} from "./HelperFunctions";
 
 const DEFAULT_PWD = 'password';
 
@@ -169,4 +170,42 @@ export function loadBulkUsers() {
         }, waitTime);
     })
 
+}
+
+export function loadPostFromActiveUser(user) {
+    const posts = {
+            username: user.username,
+            uid: user.uid,
+            author: {
+                firstName: user.firstName,
+                lastName: user.lastName,
+                avatarUrl: user.avatarUrl
+            },
+            imageUrl: 'https://media.vanityfair.com/photos/5631ad02535004464745624c/master/w_2560%2Cc_limit/sansa-stark-season-6.jpg',
+            caption: 'Costume party in the Red Kept',
+            createdOn: randomUnixTimestamp(2019, 2021),
+            likes: [],
+            comments: [
+                {
+                    comment: 'I am proud of you, Sansa. You are becoming a true leader.',
+                    createdOn: randomUnixTimestamp(2021, 2022),
+                    author: {
+                        username: 'arya',
+                        firstName: 'Arya',
+                        lastName: 'Stark'
+                    }
+                },
+                {
+                    comment: 'You are my sister, and I will always support you.',
+                    createdOn: randomUnixTimestamp(2021, 2022),
+                    author: {
+                        username: 'raven',
+                        firstName: 'Bran',
+                        lastName: 'Stark'
+                    }
+                }
+            ]
+        }
+    console.log("ADDING TO POSTS: ", posts);
+    savePost(posts).then(resp => console.log('The post was added, docId', resp));
 }

@@ -1,10 +1,11 @@
 import {useContext, useState} from 'react';
 import FirebaseContext from '../../context/FirebaseContext';
 import {UserContext} from "../../context/UserContext";
+import {COLLEC_POSTS} from "../../constants/FirebaseCollections";
 
 export default function AddComment({docId, comments, setComments, commentInput}) {
     const {firebase, FieldValue} = useContext(FirebaseContext);
-    const activeUser = useContext(UserContext);
+    const [activeUser] = useContext(UserContext);
     const [comment, setComment] = useState('');
 
     const handleSubmitComment = (event) => {
@@ -16,7 +17,7 @@ export default function AddComment({docId, comments, setComments, commentInput})
 
         return firebase
             .firestore()
-            .collection('photos')
+            .collection(COLLEC_POSTS)
             .doc(docId)
             .update({
                 comments: FieldValue.arrayUnion({displayName, comment})

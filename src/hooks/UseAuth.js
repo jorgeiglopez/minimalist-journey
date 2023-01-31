@@ -11,11 +11,10 @@ const useAuth = () => {
     // Handles only the saving/removing of the local storage.
     useEffect(() => {
         if(!!activeUser) {
-            console.log('****** ActiveUser modified: ', activeUser);
+            // console.log('****** ActiveUser modified: ', activeUser);
             localStorage.setItem(LOCAL_STORAGE_AUTH_USER, JSON.stringify(activeUser));
         } else {
-            console.log('****** ActiveUser REMOVED: ');
-            localStorage.removeItem(LOCAL_STORAGE_AUTH_USER);
+
         }
     }, [JSON.stringify(activeUser)]);
 
@@ -23,7 +22,6 @@ const useAuth = () => {
     useEffect(() => {
         async function getUserInfo(uid) {
             const userInfo = await getUserByUID(uid);
-            console.log("Fetching getUserByUID() <-----------------");
             setActiveUser({...activeUser, ...userInfo});
         }
 
@@ -31,18 +29,20 @@ const useAuth = () => {
             if (authUser) {
                 const cachedUser = JSON.parse(localStorage.getItem(LOCAL_STORAGE_AUTH_USER));
                 if (cachedUser && cachedUser?.firstName && cachedUser?.lastName) {
-                    console.log("------> setting from cache", cachedUser);
+                    // console.log("------> setting from cache", cachedUser);
                     setActiveUser(cachedUser);
                 } else {
                     getUserInfo(authUser.uid);
                 }
             } else {
                 setActiveUser(null);
+                console.log('****** ActiveUser logged out, so-->  REMOVED: ');
+                localStorage.removeItem(LOCAL_STORAGE_AUTH_USER);
             }
         });
 
         return () => {
-            logOutCurrentUser()
+            // logOutCurrentUser().then(_response => setActiveUser(null));
             userListener();
         };
 

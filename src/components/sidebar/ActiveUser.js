@@ -5,7 +5,7 @@ import {useContext} from "react";
 import {UserContext} from "../../context/UserContext";
 
 export default function ActiveUser() {
-    const activeUser = useContext(UserContext);
+    const [activeUser] = useContext(UserContext);
 
     return !activeUser ? (
         <Skeleton count={1} height={61}/>

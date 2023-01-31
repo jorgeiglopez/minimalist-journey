@@ -1,15 +1,15 @@
-import React, {useEffect, useState} from "react";
+import React, {useContext, useEffect, useState} from "react";
 import {Link, useHistory} from "react-router-dom";
 import * as ROUTES from '../constants/Routes';
 import {isEmpty, validateEmail} from "../helpers/HelperFunctions";
 import {loginWithEmailAndPassword} from "../services/FirebaseServcie";
-import useAuth from "../hooks/UseAuth";
+import {UserContext} from "../context/UserContext";
 
 
 const Login = () => {
     // TODO: check if user is signed in, and re-direct to the dashboard instead
     const history = useHistory();
-    const [, setActiveUser] = useAuth();
+    const [, setActiveUser] = useContext(UserContext);
 
     const [email, setEmail] = useState('@got.com');
     const [password, setPassword] = useState('password');

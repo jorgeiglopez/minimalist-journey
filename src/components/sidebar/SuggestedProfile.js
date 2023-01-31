@@ -3,16 +3,17 @@ import {Link} from 'react-router-dom';
 import {updateFollowersByUID, updateFollowingByUID,} from '../../services/FirebaseServcie';
 import {DEFAULT_AVATAR_IMAGE_PATH} from "../../constants/DevConstants";
 
-export default function SuggestedProfile({activeUser, profile: {uid, avatarUrl, username, firstName, lastName}, exclude, setExclude}) {
+export default function SuggestedProfile({profile: {uid, avatarUrl, username, firstName, lastName}, handleFollowUser}) {
 
     const [processing, setProcessing] = useState(false);
 
-    async function handleFollowUser() {
-        setProcessing(true);
-        await updateFollowingByUID(activeUser.uid, uid);
-        await updateFollowersByUID(uid, activeUser.uid);
-        setExclude([...exclude, uid]);
-    }
+    // async function handleFollowUser() {
+    //     setProcessing(true);
+    //     console.log("Wanting to follow: ", username, uid);
+    //     await updateFollowingByUID(activeUser.uid, uid);
+    //     await updateFollowersByUID(uid, activeUser.uid);
+    //     setExclude([...exclude, uid]);
+    // }
 
     return (
         <div className="flex flex-row items-center align-items justify-between">
@@ -31,7 +32,10 @@ export default function SuggestedProfile({activeUser, profile: {uid, avatarUrl, 
             </div>
             <button type="button"
                     className={"text-xs font-bold " + (processing ? "text-grey-medium cursor-not-allowed opacity-40" : "text-blue-medium")}
-                    onClick={handleFollowUser}
+                    onClick={() => {
+                        setProcessing(true);
+                        handleFollowUser(uid);
+                    }}
                     disabled={processing}>
                 {processing ? 'Following...' : 'Follow'}
             </button>

@@ -1,10 +1,11 @@
 import {useContext, useState} from 'react';
 import FirebaseContext from '../../context/FirebaseContext';
 import {UserContext} from "../../context/UserContext";
+import {COLLEC_POSTS} from "../../constants/FirebaseCollections";
 
 export default function Action({docId, totalLikes, likedPhoto, handleFocus}) {
     const {firebase, FieldValue} = useContext(FirebaseContext);
-    const activeUser = useContext(UserContext);
+    const [activeUser] = useContext(UserContext);
 
     const [likes, setLikes] = useState(totalLikes);
     const [toggleLiked, setToggleLiked] = useState(likedPhoto);
@@ -14,7 +15,7 @@ export default function Action({docId, totalLikes, likedPhoto, handleFocus}) {
 
         await firebase
             .firestore()
-            .collection('photos')
+            .collection(COLLEC_POSTS)
             .doc(docId)
             .update({
                 likes: toggleLiked ? FieldValue.arrayRemove(activeUser.uid) : FieldValue.arrayUnion(activeUser.uid)
