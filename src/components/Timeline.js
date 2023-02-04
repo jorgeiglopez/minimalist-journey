@@ -7,7 +7,7 @@ import useTimeline from "../hooks/UseTimeline";
 const Timeline = () => {
     const [activeUser] = useContext(UserContext);
     const followingPosts = useTimeline(activeUser);
-    console.log('RETURNED: followingPosts',followingPosts);
+
     return (
         <div className="container col-span-2">
             {!activeUser || !followingPosts ?
@@ -17,9 +17,7 @@ const Timeline = () => {
                     <p className="flex justify-center font-bold">Follow others to see photos.</p>
                     :
                     followingPosts && followingPosts.length > 0 ?
-                        followingPosts.map(
-                            post => <Post key={post.docId} post={post}/>
-                        )
+                        followingPosts.map(post => <Post key={post.docId} post={post} activeUser={activeUser}/>)
                         :
                         <p className="flex justify-center font-bold">There are no pictures to show...</p>
             }

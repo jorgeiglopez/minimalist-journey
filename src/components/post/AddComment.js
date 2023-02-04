@@ -1,27 +1,14 @@
-import {useContext, useState} from 'react';
-import FirebaseContext from '../../context/FirebaseContext';
-import {UserContext} from "../../context/UserContext";
-import {COLLEC_POSTS} from "../../constants/FirebaseCollections";
+import {useState} from 'react';
 
-export default function AddComment({docId, comments, setComments, commentInput}) {
-    const {firebase, FieldValue} = useContext(FirebaseContext);
-    const [activeUser] = useContext(UserContext);
+export default function AddComment({newCommentHandler, commentInputRef}) {
     const [comment, setComment] = useState('');
 
-    const handleSubmitComment = (event) => {
-        const displayName = `${activeUser.firstName} ${activeUser.lastName}`;
+    const handleSubmitComment = async (event) => {
         event.preventDefault();
-
-        setComments([...comments, {displayName, comment}]);
-        setComment('');
-
-        return firebase
-            .firestore()
-            .collection(COLLEC_POSTS)
-            .doc(docId)
-            .update({
-                comments: FieldValue.arrayUnion({displayName, comment})
-            });
+        if(comment.length > 1) {
+            await newCommentHandler(comment);
+            setComment('');
+        }
     };
 
     return (
@@ -29,20 +16,18 @@ export default function AddComment({docId, comments, setComments, commentInput})
             <form
                 className="flex justify-between pl-0 pr-5"
                 method="POST"
-                onSubmit={(event) =>
-                    comment.length >= 1 ? handleSubmitComment(event) : event.preventDefault()
-                }
+                onSubmit={event => handleSubmitComment(event)}
             >
                 <input
+                    className="text-sm text-gray-base w-full mr-3 py-5 px-4"
+                    ref={commentInputRef}
                     aria-label="Add a comment"
                     autoComplete="off"
-                    className="text-sm text-gray-base w-full mr-3 py-5 px-4"
                     type="text"
-                    name="add-comment"
+                    name="new-comment"
                     placeholder="Add a comment..."
                     value={comment}
                     onChange={({target}) => setComment(target.value)}
-                    ref={commentInput}
                 />
                 <button
                     className={`text-sm font-bold text-blue-medium ${!comment && 'opacity-25'}`}

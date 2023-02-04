@@ -1,27 +1,25 @@
-import {useContext, useState} from 'react';
-import FirebaseContext from '../../context/FirebaseContext';
-import {UserContext} from "../../context/UserContext";
-import {COLLEC_POSTS} from "../../constants/FirebaseCollections";
+import {useState} from 'react';
+import {setToggleLikedValue} from "../../services/FirebaseServcie";
 
-export default function Action({docId, totalLikes, likedPhoto, handleFocus}) {
-    const {firebase, FieldValue} = useContext(FirebaseContext);
-    const [activeUser] = useContext(UserContext);
+const checkLiked = (uid, likes) => {
+    if (!uid || likes?.length === 0) {
+        return false;
+    }
+    else {
+        return likes?.filter(id => id === uid).length > 0;
+    }
+}
 
-    const [likes, setLikes] = useState(totalLikes);
-    const [toggleLiked, setToggleLiked] = useState(likedPhoto);
+export default function Action({post, activeUser, handleFocus}) {
+    const [liked, setLiked] = useState(checkLiked(activeUser.uid, post.likes));
+    const [likesCount, setLikesCount] = useState(post?.likes?.length || 0);
 
     const handleToggleLiked = async () => {
-        setToggleLiked((toggleLiked) => !toggleLiked);
+        const newToggleValue = !liked;
 
-        await firebase
-            .firestore()
-            .collection(COLLEC_POSTS)
-            .doc(docId)
-            .update({
-                likes: toggleLiked ? FieldValue.arrayRemove(activeUser.uid) : FieldValue.arrayUnion(activeUser.uid)
-            });
-
-        setLikes((likes) => (toggleLiked ? likes - 1 : likes + 1));
+        setLiked(newToggleValue);
+        setLikesCount((likes) => (liked ? likes - 1 : likes + 1));
+        await setToggleLikedValue(post.docId, activeUser.uid, newToggleValue);
     };
 
     return (
@@ -41,7 +39,7 @@ export default function Action({docId, totalLikes, likedPhoto, handleFocus}) {
                         stroke="currentColor"
                         tabIndex={0}
                         className={`w-8 mr-4 select-none cursor-pointer focus:outline-none ${
-                            toggleLiked ? 'fill-red text-red-primary' : 'text-black-light'
+                            liked ? 'fill-red text-red-primary' : 'text-black-light'
                         }`}
                     >
                         <path
@@ -75,7 +73,7 @@ export default function Action({docId, totalLikes, likedPhoto, handleFocus}) {
                 </div>
             </div>
             <div className="p-4 py-0">
-                <p className="font-bold">{likes === 1 ? `${likes} like` : `${likes} likes`}</p>
+                <p className="font-bold">{likesCount === 1 ? `${likesCount} like` : `${likesCount} likes`}</p>
             </div>
         </>
     );

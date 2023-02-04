@@ -21,7 +21,6 @@ export async function getUserByUID(uid) {
 
 export const getSuggestedProfiles = async (toExclude, limit = 10) => {
     let result = [];
-    console.log('to exclude, ', toExclude);
     try {
         const response = await firebase.firestore().collection(COLLEC_USERS)
             .where('__name__', 'not-in', toExclude)
@@ -95,7 +94,10 @@ export const createUserWithUniqueUsername = async ({username, email, password, f
         });
 
         // once the FirebaseAuth has been recorded, create the Firestore record
-        const docRef = firebase.firestore().collection(COLLEC_USERS).doc(authServiceResponse.user.uid);
+        const docRef = firebase.firestore()
+            .collection(COLLEC_USERS)
+            .doc(authServiceResponse.user.uid);
+
         firestoreResponse = await docRef.set({
             username: username.toLowerCase(),
             firstName,
@@ -121,7 +123,8 @@ export const createUserWithUniqueUsername = async ({username, email, password, f
 
 export const loginWithEmailAndPassword = async (email, password, setActiveUser) => {
     try {
-        const signedInUser = await firebase.auth().signInWithEmailAndPassword(email, password);
+        const signedInUser = await firebase.auth()
+            .signInWithEmailAndPassword(email, password);
         const idTokenResult = await signedInUser.user.getIdTokenResult();
 
         const {uid, displayName, emailVerified, refreshToken, isAnonymous} = signedInUser.user;
@@ -151,11 +154,27 @@ export const loginWithEmailAndPassword = async (email, password, setActiveUser) 
 }
 
 export const logOutCurrentUser = async () => {
-    await firebase.auth().signOut()
+    await firebase.auth()
+        .signOut()
 }
 
 export const savePost = async post => {
-    await firebase.firestore().collection('posts').add(post);
+    await firebase.firestore()
+        .collection(COLLEC_POSTS)
+        .add(post);
+}
 
+export const appendComment = async (docId, commentObj) => {
+    await firebase.firestore()
+        .collection(COLLEC_POSTS)
+        .doc(docId)
+        .update({comments: FieldValue.arrayUnion(commentObj)})
+}
+
+export const setToggleLikedValue = async (docId, uid, liked) => {
+    await firebase.firestore()
+        .collection(COLLEC_POSTS)
+        .doc(docId)
+        .update({likes: liked? FieldValue.arrayUnion(uid) : FieldValue.arrayRemove(uid)});
 }
 

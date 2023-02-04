@@ -1,54 +1,61 @@
 import { useState } from 'react';
-import { formatDistance } from 'date-fns';
 import { Link } from 'react-router-dom';
 import AddComment from './AddComment';
+import {appendComment} from "../../services/FirebaseServcie";
+import {abbreviateDate} from "../../helpers/HelperFunctions";
 
-export default function Comment({docId, comments: postComments, commentInput}) {
-    const TRIM_COMMENTS_AFTER = 3;
+export default function Comment({post, activeUser, commentInputRef}) {
+    const [allComments, setAllComments] = useState(post?.comments || []);
 
-    const [comments, setComments] = useState(postComments);
-    const [commentsSlice, setCommentsSlice] = useState(1);
-
-    const showNextComments = () => {
-        setCommentsSlice(commentsSlice + 1);
-    };
-
-    if (!postComments || postComments.length === 0) {
+    if (!post?.comments || post?.comments.length === 0) {
         return null;
     }
+
+    const saveNewComment = async (newComment) => {
+        const commentObj = {
+            author: {
+                firstName: activeUser.firstName,
+                lastName: activeUser.lastName,
+                username: activeUser.username
+            },
+            comment: newComment,
+            createdOn: new Date().getTime()
+        };
+
+        setAllComments([...allComments, commentObj]);
+        await appendComment(post.docId, commentObj);
+    };
 
     return (
         <>
             <div className="p-4 pt-1 pb-4">
-                {postComments.map((item) => (
+                {allComments.map((item) => (
                     <p key={`${item.comment}-${item.author?.username}`} className="mb-1">
                         <Link to={`/p/${item.author?.username}`}>
                             <span className="mr-1 font-bold">{item.author?.username}: </span>
                         </Link>
-                        <span>{item.comment}</span>
+                        <span>{item.comment} - </span>
+                        <span className="text-gray-base normal-case text-sm mt-2 mb-4">
+                            {abbreviateDate(item?.createdOn)}
+                        </span>
                     </p>
                 ))}
-                {comments.length >= 1 && commentsSlice < comments.length && (
+                {allComments.length >= 3 && (
                     <button
                         className="text-sm text-gray-base mb-1 cursor-pointer focus:outline-none"
                         type="button"
-                        onClick={showNextComments}
-                        onKeyDown={(event) => {
-                            if (event.key === 'Enter') {
-                                showNextComments();
-                            }
-                        }}
+                        // onClick={showNextComments}
+                        // onKeyDown={(event) => {
+                        //     if (event.key === 'Enter') {
+                        //         showNextComments();
+                        //     }
+                        // }}
                     >
-                        View all {postComments.length} comments.
+                        View all {allComments.length} comments.
                     </button>
                 )}
             </div>
-            <AddComment
-                docId={docId}
-                comments={postComments}
-                setComments={setComments}
-                commentInput={commentInput}
-            />
+            <AddComment newCommentHandler={saveNewComment} commentInputRef={commentInputRef} />
         </>
     );
 }
